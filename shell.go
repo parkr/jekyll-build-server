@@ -14,7 +14,7 @@ type Execer struct {
 }
 
 func (e *Execer) commandFromArgs(args ...string) *exec.Cmd {
-	e.Log("system: running command: %s", strings.Join(args, ""))
+	e.Log("system: running command: %s", strings.Join(args, " "))
 	cmd := exec.Command(args[0], args[1:len(args)]...)
 	cmd.Stdin = os.Stdin
 	return cmd
