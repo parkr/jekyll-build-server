@@ -21,6 +21,7 @@ func init() {
 
 func buildJekyllSite(payload github.WebHookPayload) {
 	log.Println("Building payload:", payload)
+	log.Println("")
 	src, err := clone(&payload)
 	if err != nil {
 		log.Printf("Encountered an error cloning %s: %v", *payload.Repo.FullName, err)
