@@ -14,11 +14,11 @@ import (
 )
 
 var (
-	username string
+	repoPrefix string
 )
 
 func isAuthorizedBuild(payload github.WebHookPayload) bool {
-	return strings.HasPrefix(*payload.Repo.FullName, username)
+	return strings.HasPrefix(*payload.Repo.FullName, repoPrefix)
 }
 
 func shouldBuild(payload github.WebHookPayload) bool {
@@ -59,10 +59,10 @@ func postReceiveHook(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	flag.StringVar(&username, "username", "", "The username to look for in the repo name in order to build.")
+	flag.StringVar(&repoPrefix, "prefix", "", "The repo name prefix required in order to build.")
 	flag.Parse()
 
-	if username == "" {
+	if repoPrefix == "" {
 		log.Fatal("Specify a username to look for in the repo names with -username='name'")
 	}
 
