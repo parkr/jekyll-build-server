@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/google/go-github/github"
@@ -64,6 +65,14 @@ func main() {
 
 	if repoPrefix == "" {
 		log.Fatal("Specify a prefix to look for in the repo names with -prefix='name'")
+	}
+
+	if f, err := os.Stat(sourceBase); f == nil || os.IsNotExist(err) {
+		log.Fatalf("The -src folder, %s, doesn't exist.", sourceBase)
+	}
+
+	if f, err := os.Stat(destBase); f == nil || os.IsNotExist(err) {
+		log.Fatalf("The -dest folder, %s, doesn't exist.", destBase)
 	}
 
 	goji.Post("/_github", postReceiveHook)

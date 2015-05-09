@@ -1,1 +1,3 @@
 jekyll-build-server
+dest/
+tmp/
