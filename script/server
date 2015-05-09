@@ -1,2 +1,2 @@
 #!/bin/bash
-script/build && ./jekyll-build-server -bind=:7523 $@
+script/build && ./jekyll-build-server -bind=localhost:7523 $@
