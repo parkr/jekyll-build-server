@@ -63,7 +63,7 @@ func main() {
 	flag.Parse()
 
 	if repoPrefix == "" {
-		log.Fatal("Specify a username to look for in the repo names with -username='name'")
+		log.Fatal("Specify a prefix to look for in the repo names with -prefix='name'")
 	}
 
 	goji.Post("/_github", postReceiveHook)
