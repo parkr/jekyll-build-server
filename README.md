@@ -35,6 +35,7 @@ All the configuration happens in flags:
 - `-bind=":9090"` – the port/host to bind the server to
 - `-src="/tmp"` – the directory to clone the sources into
 - `-dest="/var/www"` – the base directory to put built sites into
+- `-db="localhost@/builds"` – the connection string where your builds are stored. optional
 
 Run `jekyll-build-server -h` to learn more at any time.
 
