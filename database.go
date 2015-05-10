@@ -23,7 +23,7 @@ const (
 
 	selectBuild   = `SELECT * FROM builds WHERE id=?;`
 	insertBuild   = `INSERT INTO builds (id, output, success, created_at) VALUES (:id, :output, :success, :created_at);`
-	updateOutput  = `UPDATE builds SET output = CONCAT_WS(CHAR(10 using utf8), :line, output) WHERE id = :id;`
+	updateOutput  = `UPDATE builds SET output = CONCAT_WS(CHAR(10 using utf8), output, :line) WHERE id = :id;`
 	updateBuild   = `UPDATE builds SET output=:output, success=:success, created_at=:created_at, completed_at=:completed_at WHERE id=:id;`
 	completeBuild = `UPDATE builds SET completed_at = :completed_at WHERE id = :id;`
 )
