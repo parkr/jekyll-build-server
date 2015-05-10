@@ -89,7 +89,7 @@ func (e *Execer) Fail(args ...interface{}) {
 	e.Log(args...)
 	e.Build.Success = false
 	e.Log("system: build terminated")
-	e.Complete()
+	e.End()
 }
 
 func (e *Execer) Complete() {
