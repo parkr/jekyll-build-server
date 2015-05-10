@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -9,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"database/sql"
 
 	"github.com/google/go-github/github"
 	"github.com/zenazn/goji"
@@ -20,6 +20,11 @@ import (
 var repoPrefix string
 
 func buildsIndexHandler(c web.C, w http.ResponseWriter, r *http.Request) {
+	if db == nil {
+		fmt.Fprintf(w, "database logging not enabled")
+		return
+	}
+
 	builds := []Build{}
 	err := db.Select(&builds, "SELECT * FROM builds ORDER BY created_at DESC")
 	if err != nil {
@@ -34,6 +39,11 @@ func buildsIndexHandler(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func buildsShowHandler(c web.C, w http.ResponseWriter, r *http.Request) {
+	if db == nil {
+		fmt.Fprintf(w, "database logging not enabled")
+		return
+	}
+
 	id := fmt.Sprintf("%s/%s", c.URLParams["name"], c.URLParams["repo_tag"])
 	var build Build
 	if err := build.Get(id); err != nil {
