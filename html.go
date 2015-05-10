@@ -13,7 +13,7 @@ const (
 
 func builderImgForBuild(b *Build) string {
 	return fmt.Sprintf(
-		"<img width='15' height='15' style='vertical-align: center' data-success='%v' src='%s'>",
+		"<img width='15' height='15' style='vertical-align: middle' data-success='%v' src='%s'>",
 		b.Success,
 		builderIconForBuild(b))
 }
