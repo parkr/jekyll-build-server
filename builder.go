@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
+	"time"
 
 	"github.com/google/go-github/github"
 )
@@ -18,22 +20,38 @@ func init() {
 	flag.StringVar(&destBase, "dest", "/var/www", "Where the jekyll builds go.")
 }
 
+func formattedTime() string {
+	return time.Now().UTC().Format(time.RFC3339)
+}
+
 func buildJekyllSite(payload github.WebHookPayload) {
 	buildId := fmt.Sprintf("%s-%s", *payload.Repo.FullName, (*payload.After)[0:10])
-	execer := &Execer{buildId}
+	execer := &Execer{&Build{
+		Id:        buildId,
+		Success:   false,
+		CreatedAt: formattedTime(),
+	}}
+
+	if execer.Build.Exists() {
+		log.Printf("[%s] system: build already exists. re-running...", execer.Build.Id)
+		execer.Build.Output = ""
+		execer.Build.CompletedAt = ""
+		execer.Build.Success = false
+		execer.Build.Save()
+	}
 
 	src, err := clone(execer, &payload)
 	if err != nil {
-		execer.Log("system: encountered an error cloning %s: %v", *payload.Repo.FullName, err)
+		execer.Fail("system: encountered an error cloning %s: %v", *payload.Repo.FullName, err)
 		return
 	}
 	err = build(execer, src, destination(payload.Repo))
 	if err != nil {
-		execer.Log("system: encountered an error building %s: %v", *payload.Repo.FullName, err)
+		execer.Fail("system: encountered an error building %s: %v", *payload.Repo.FullName, err)
 		return
 	}
 
-	execer.Log("system: build complete")
+	execer.Complete()
 }
 
 func clone(e *Execer, payload *github.WebHookPayload) (src string, err error) {

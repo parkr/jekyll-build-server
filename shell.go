@@ -10,7 +10,7 @@ import (
 )
 
 type Execer struct {
-	BuildId string
+	Build *Build
 }
 
 func (e *Execer) commandFromArgs(args ...string) *exec.Cmd {
@@ -22,9 +22,14 @@ func (e *Execer) commandFromArgs(args ...string) *exec.Cmd {
 
 func (e *Execer) Log(args ...interface{}) {
 	if formatStr, ok := args[0].(string); ok {
-		log.Printf("[%s] %s", e.BuildId, fmt.Sprintf(formatStr, args[1:]...))
+		// Log to stdout.
+		logMsg := fmt.Sprintf("[%s] %s", e.Build.Id, fmt.Sprintf(formatStr, args[1:]...))
+		log.Printf(logMsg)
+
+		// Log to the database
+		e.Build.Log(logMsg)
 	} else {
-		log.Printf("invalid format string: %v", formatStr)
+		log.Printf("[%s] invalid format string: %v", e.Build.Id, formatStr)
 	}
 }
 
@@ -78,4 +83,24 @@ func (e *Execer) runCommand(cmd *exec.Cmd) error {
 	}
 
 	return nil
+}
+
+func (e *Execer) Fail(args ...interface{}) {
+	e.Log(args...)
+	e.Build.Success = false
+	e.Log("system: build terminated")
+	e.Complete()
+}
+
+func (e *Execer) Complete() {
+	e.Build.Success = true
+	e.Log("system: build complete")
+	e.End()
+}
+
+func (e *Execer) End() {
+	e.Build.CompletedAt = formattedTime()
+	if err := e.Build.Save(); err != nil {
+		log.Printf("[%s] exec: error updating db: %v", e.Build.Id, err)
+	}
 }

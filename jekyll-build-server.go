@@ -75,6 +75,10 @@ func main() {
 		log.Fatalf("The -dest folder, %s, doesn't exist.", destBase)
 	}
 
+	if dbConnString != "" {
+		InitDatabase()
+	}
+
 	goji.Post("/_github", postReceiveHook)
 	goji.Serve()
 }
