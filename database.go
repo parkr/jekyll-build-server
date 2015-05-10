@@ -21,7 +21,7 @@ const (
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;`
 	checkIfSchemaExists = `SELECT COUNT(*) as does_exist FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'builds';`
 
-	selectBuild   = `SELECT * FROM builds WHERE id='%s';`
+	selectBuild   = `SELECT * FROM builds WHERE id=?;`
 	insertBuild   = `INSERT INTO builds (id, output, success, created_at) VALUES (:id, :output, :success, :created_at);`
 	updateOutput  = `UPDATE builds SET output = concat(:line, output) WHERE id = :id;`
 	updateBuild   = `UPDATE builds SET output=:output, success=:success, created_at=:created_at, completed_at=:completed_at WHERE id=:id;`
@@ -78,9 +78,11 @@ func (b *Build) Get(id string) error {
 		return nil
 	}
 
-	log.Printf("[%s] db: has been saved: %v", b.Id, b.saved)
+	if id != "" {
+		b.Id = id
+	}
 
-	err := db.Get(b, fmt.Sprintf(selectBuild, id))
+	err := db.Get(b, selectBuild, id)
 	if err != nil {
 		log.Printf("[%s] db: Get() received an error: %v", b.Id, err)
 		b.saved = false

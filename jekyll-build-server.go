@@ -9,14 +9,58 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"database/sql"
 
 	"github.com/google/go-github/github"
 	"github.com/zenazn/goji"
+	"github.com/zenazn/goji/web"
+	"github.com/zenazn/goji/web/middleware"
 )
 
-var (
-	repoPrefix string
-)
+var repoPrefix string
+
+func buildsIndexHandler(c web.C, w http.ResponseWriter, r *http.Request) {
+	builds := []Build{}
+	err := db.Select(&builds, "SELECT * FROM builds ORDER BY created_at DESC")
+	if err != nil {
+		log.Printf("[%s] error listing builds: %v", middleware.GetReqID(c), err)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html")
+	for _, build := range builds {
+		fmt.Fprintf(w, "%s <a href='/%s'>%s</a> created at %s <br>", builderImgForBuild(&build), build.Id, build.Id, build.CreatedAt)
+	}
+}
+
+func buildsShowHandler(c web.C, w http.ResponseWriter, r *http.Request) {
+	id := fmt.Sprintf("%s/%s", c.URLParams["name"], c.URLParams["repo_tag"])
+	var build Build
+	if err := build.Get(id); err != nil {
+		w.Header().Set("Content-Type", "text/plain")
+		switch err {
+		case sql.ErrNoRows:
+			log.Printf("[%s] build with id='%s' doesn't exist", middleware.GetReqID(c), id, err)
+			http.Error(w, fmt.Sprintf("404 build %s not found", id), 404)
+		default:
+			log.Printf("[%s] error fetching build with id='%s': %v", middleware.GetReqID(c), id, err)
+			http.Error(w, err.Error(), 500)
+		}
+		return
+	} else {
+		w.Header().Set("Content-Type", "text/html")
+		fmt.Fprintf(w,
+			"<p>&larr; %s</p><h3>%s</h3><p>revision: %s<br>created: %s<br>completed: %s<br>success: %v %s<br>output:</p><pre>%s</pre>",
+			linkTo("/", "all builds"),
+			build.Id,
+			githubRevisionLink(&build),
+			build.CreatedAt,
+			build.CompletedAt,
+			build.Success,
+			builderImgForBuild(&build),
+			build.Output)
+	}
+}
 
 func isAuthorizedBuild(payload github.WebHookPayload) bool {
 	return strings.HasPrefix(*payload.Repo.FullName, repoPrefix)
@@ -79,6 +123,8 @@ func main() {
 		InitDatabase()
 	}
 
+	goji.Get("/", buildsIndexHandler)
+	goji.Get("/:name/:repo_tag", buildsShowHandler)
 	goji.Post("/_github", postReceiveHook)
 	goji.Serve()
 }
