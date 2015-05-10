@@ -33,6 +33,7 @@ func buildsIndexHandler(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
+	fmt.Fprintf(w, "all builds: <br>")
 	for _, build := range builds {
 		fmt.Fprintf(w, "%s <a href='/%s'>%s</a> created at %s <br>", builderImgForBuild(&build), build.Id, build.Id, build.CreatedAt)
 	}
