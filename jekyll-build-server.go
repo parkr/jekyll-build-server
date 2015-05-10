@@ -79,7 +79,7 @@ func isAuthorizedBuild(payload github.WebHookPayload) bool {
 
 func shouldBuild(payload github.WebHookPayload) bool {
 	return isAuthorizedBuild(payload) &&
-		*payload.Ref == "refs/heads/master" &&
+		(*payload.Ref == "refs/heads/master" || *payload.Ref == "refs/heads/gh-pages") &&
 		*payload.After != "0000000000000000000000000000000000000000"
 }
 
