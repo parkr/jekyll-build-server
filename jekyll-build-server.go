@@ -99,6 +99,12 @@ func postReceiveHook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if &payload == nil || payload.After == nil {
+		log.Println("received a ping request, must be... did you just setup a repo?")
+		fmt.Fprintf(w, "no revision given...")
+		return
+	}
+
 	log.Printf("Request to build %s", *payload.Repo.FullName)
 	if isAuthorizedBuild(payload) {
 		if shouldBuild(payload) {
