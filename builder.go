@@ -34,6 +34,7 @@ func buildJekyllSite(payload github.WebHookPayload) {
 
 	if execer.Build.Exists() {
 		log.Printf("[%s] system: build already exists. re-running...", execer.Build.Id)
+		execer.Build.CreatedAt = formattedTime()
 		execer.Build.Output = ""
 		execer.Build.CompletedAt = ""
 		execer.Build.Success = false
