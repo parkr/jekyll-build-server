@@ -12,7 +12,10 @@ const (
 )
 
 func builderImgForBuild(b *Build) string {
-	return fmt.Sprintf("<img width='15' height='15' style='vertical-align: center' src='%s'>", builderIconForBuild(b))
+	return fmt.Sprintf(
+		"<img width='15' height='15' style='vertical-align: center' data-success='%v' src='%s'>",
+		b.Success,
+		builderIconForBuild(b))
 }
 
 func builderIconForBuild(b *Build) string {
