@@ -97,7 +97,7 @@ func build(e *Execer, src, dest string) (err error) {
 		return
 	}
 
-	err = e.ExecInDir(src, "script/build", "-s", src, "-d", dest, "--full-rebuild")
+	err = e.ExecInDir(src, "script/build", "-s", src, "-d", dest)
 	if err != nil {
 		return
 	}
