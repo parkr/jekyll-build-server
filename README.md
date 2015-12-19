@@ -3,18 +3,20 @@
 Taking a webhook approach to building sites in Jekyll. Kind of like
 jekyll-hook and others, but with a single binary because Go is nice.
 
+[![Build Status](https://travis-ci.org/parkr/jekyll-build-server.svg?branch=master)](https://travis-ci.org/parkr/jekyll-build-server)
+
 ## Installation & Usage
 
 ```shell
 $ go get byparker.com/go/jekyll-build-server
-$ $GOPATH/bin/jekyll-build-server -prefix="your-username-or-org"
+$ $GOPATH/bin/jekyll-build-server -owner="your-username-or-org"
 ```
 
 Daemonize it or put it in a screen session if you want.
 
 Add a webhook to this server's `POST /_github` endpoint.
 Each request will be checked and only build if on the `master`
-branch and if the repo has the proper prefix. It will clone
+branch and if the repo has the proper owner. It will clone
 the repo into `${src}/${repo_nwo}` and build it into `${dest}/${repo_nwo}`
 
 ## Dependencies
@@ -31,7 +33,7 @@ You'll need:
 
 All the configuration happens in flags:
 
-- `-prefix="your-username-or-org"` – the string your repos' full names (e.g. "parkr" in "parkr/jekyll-build-server") must start with in order to be authorized to be built
+- `-owner="your-username-or-org"` – the string your repos' full names (e.g. "parkr" in "parkr/jekyll-build-server") must start with in order to be authorized to be built
 - `-bind=":9090"` – the port/host to bind the server to
 - `-src="/tmp"` – the directory to clone the sources into
 - `-dest="/var/www"` – the base directory to put built sites into
