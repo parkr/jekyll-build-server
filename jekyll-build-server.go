@@ -17,7 +17,7 @@ import (
 	"github.com/zenazn/goji/web/middleware"
 )
 
-var repoPrefix string
+var requiredOwner string
 
 func buildsIndexHandler(c web.C, w http.ResponseWriter, r *http.Request) {
 	if db == nil {
@@ -74,7 +74,7 @@ func buildsShowHandler(c web.C, w http.ResponseWriter, r *http.Request) {
 }
 
 func isAuthorizedBuild(payload github.WebHookPayload) bool {
-	return strings.HasPrefix(*payload.Repo.FullName, repoPrefix)
+	return strings.HasPrefix(*payload.Repo.FullName, requiredOwner+"/")
 }
 
 func shouldBuild(payload github.WebHookPayload) bool {
@@ -121,10 +121,10 @@ func postReceiveHook(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	flag.StringVar(&repoPrefix, "prefix", "", "The repo name prefix required in order to build.")
+	flag.StringVar(&requiredOwner, "owner", "", "The owner required in order to build.")
 	flag.Parse()
 
-	if repoPrefix == "" {
+	if requiredOwner == "" {
 		log.Fatal("Specify a prefix to look for in the repo names with -prefix='name'")
 	}
 
