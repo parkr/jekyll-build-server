@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"strings"
 )
 
@@ -14,6 +15,31 @@ const (
 	imgSadBuilder     = `https://assets-cdn.github.com/images/icons/emoji/unicode/1f534.png`
 	imgWorkingBuilder = `https://assets-cdn.github.com/images/icons/emoji/unicode/2754.png`
 )
+
+var templates = template.New("pages")
+
+func init() {
+	templates.Funcs(template.FuncMap(map[string]interface{}{
+		"builderImg": func(b *Build) template.HTML {
+			return template.HTML(builderImgForBuild(b))
+		},
+		"revLink": func(b *Build) template.HTML {
+			return template.HTML(githubRevisionLink(b))
+		},
+	}))
+	template.Must(templates.New("index.html").Parse(`all builds: {{range .}}<br> {{builderImg .}} <a href="/{{.Id}}">{{.Id}}</a> created at {{.CreatedAt}}{{end}}`))
+	template.Must(templates.New("build.show.html").Parse(`
+	<p>&larr; <a href="/">all builds</a></p>
+    <h3>{{.Id}}</h3>
+    <p>
+        revision: {{revLink .}}<br>
+        created: {{.CreatedAt}}<br>
+        completed: {{.CompletedAt}}<br>
+        success: {{.Success}} {{builderImg .}}<br>
+        output:
+    </p><pre>{{.Output}}</pre>
+    `))
+}
 
 func builderImgForBuild(b *Build) string {
 	return fmt.Sprintf(
