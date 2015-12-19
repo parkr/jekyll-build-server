@@ -125,7 +125,7 @@ func main() {
 	flag.Parse()
 
 	if requiredOwner == "" {
-		log.Fatal("Specify a prefix to look for in the repo names with -prefix='name'")
+		log.Fatal("Specify an owner to look for in the repo names with -owner='name'")
 	}
 
 	if f, err := os.Stat(sourceBase); f == nil || os.IsNotExist(err) {
