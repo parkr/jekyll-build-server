@@ -1,2 +1,2 @@
 #!/bin/bash
-gpm install
+make deps
