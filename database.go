@@ -4,13 +4,15 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
 const (
-	schema = `CREATE TABLE builds (
+	mySQLDateTimeFormat = "2006-01-02 15:04:05"
+	schema              = `CREATE TABLE builds (
 	    id varchar(255) NOT NULL DEFAULT '',
 	    output text NOT NULL,
 	    success tinyint(1) NOT NULL DEFAULT '0',
@@ -33,6 +35,10 @@ var (
 
 	dbConnString string
 )
+
+func mySQLFormattedTime() string {
+	return time.Now().UTC().Format(mySQLDateTimeFormat)
+}
 
 func init() {
 	flag.StringVar(&dbConnString, "db", "", "Connection string for database. Leave blank to omit db logging.")
@@ -109,7 +115,7 @@ func (b *Build) UpdateOutput(line string) error {
 }
 
 func (b *Build) Log(msg string) {
-	msg = fmt.Sprintf("%s %s", formattedTime(), msg)
+	msg = fmt.Sprintf("%s %s", mySQLFormattedTime(), msg)
 	if b.Output == "" {
 		b.Output = msg
 	} else {

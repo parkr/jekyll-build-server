@@ -99,7 +99,7 @@ func (e *Execer) Complete() {
 }
 
 func (e *Execer) End() {
-	e.Build.CompletedAt = formattedTime()
+	e.Build.CompletedAt = mySQLFormattedTime()
 	if err := e.Build.Save(); err != nil {
 		log.Printf("[%s] exec: error updating db: %v", e.Build.Id, err)
 	}
