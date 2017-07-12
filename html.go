@@ -27,17 +27,41 @@ func init() {
 			return template.HTML(githubRevisionLink(b))
 		},
 	}))
-	template.Must(templates.New("index.html").Parse(`all builds: {{range .}}<br> {{builderImg .}} <a href="/{{.Id}}">{{.Id}}</a> created at {{.CreatedAt}}{{end}}`))
+	template.Must(templates.New("index.html").Parse(`
+      <html>
+      <head>
+      <title>All builds: jekyll-build-server</title>
+      <style type="text/css">
+        body { font-family: monospace; }
+      </style>
+      </head>
+      <body>
+        all builds: {{range .}}<br>
+        {{builderImg .}} <a href="/{{.Id}}">{{.Id}}</a> created at {{.CreatedAt}}{{end}}
+      </body>
+      </html>
+    `))
 	template.Must(templates.New("build.show.html").Parse(`
-	<p>&larr; <a href="/">all builds</a></p>
-    <h3>{{.Id}}</h3>
-    <p>
-        revision: {{revLink .}}<br>
-        created: {{.CreatedAt}}<br>
-        completed: {{.CompletedAt}}<br>
-        success: {{.Success}} {{builderImg .}}<br>
-        output:
-    </p><pre>{{.Output}}</pre>
+      <html>
+      <head>
+      <title>Build {{.Id}}: jekyll-build-server</title>
+      <style type="text/css">
+        body { font-family: monospace; }
+      </style>
+      </head>
+      <body>
+      <p>&larr; <a href="/">all builds </a></p>
+      <h3>{{.Id}}</h3>
+      <p>
+          revision: {{revLink .}}<br>
+          created: {{.CreatedAt}}<br>
+          completed: {{.CompletedAt}}<br>
+          success: {{.Success}} {{builderImg .}}<br>
+          output:
+      </p>
+      <pre>{{.Output}}</pre>
+      </body>
+      </html>
     `))
 }
 
