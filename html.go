@@ -36,7 +36,7 @@ func init() {
       </style>
       </head>
       <body>
-        all builds: {{range .}}<br>
+        all builds: <br>{{range .}}<br>
         {{builderImg .}} <a href="/{{.Id}}">{{.Id}}</a> created at {{.CreatedAt}}{{end}}
       </body>
       </html>
