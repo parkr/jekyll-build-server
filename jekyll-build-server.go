@@ -33,9 +33,9 @@ func buildsIndexHandler(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprintf(w, "all builds: <br>")
-	for _, build := range builds {
-		fmt.Fprintf(w, "%s <a href='/%s'>%s</a> created at %s <br>", builderImgForBuild(&build), build.Id, build.Id, build.CreatedAt)
+	if err = templates.ExecuteTemplate(w, "index.html", builds); err != nil {
+		log.Printf("[%s] failed to render index.html: %v", err)
+		w.Write([]byte(`FAILED`))
 	}
 }
 
@@ -60,16 +60,10 @@ func buildsShowHandler(c web.C, w http.ResponseWriter, r *http.Request) {
 		return
 	} else {
 		w.Header().Set("Content-Type", "text/html")
-		fmt.Fprintf(w,
-			"<p>&larr; %s</p><h3>%s</h3><p>revision: %s<br>created: %s<br>completed: %s<br>success: %v %s<br>output:</p><pre>%s</pre>",
-			linkTo("/", "all builds"),
-			build.Id,
-			githubRevisionLink(&build),
-			build.CreatedAt,
-			build.CompletedAt,
-			build.Success,
-			builderImgForBuild(&build),
-			build.Output)
+		if err = templates.ExecuteTemplate(w, "build.show.html", &build); err != nil {
+			log.Printf("[%s] failed to render build.show.html: %v", err)
+			w.Write([]byte(`FAILED`))
+		}
 	}
 }
 
