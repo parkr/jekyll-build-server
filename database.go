@@ -24,7 +24,7 @@ const (
 	checkIfSchemaExists = `SELECT COUNT(*) as does_exist FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'builds';`
 
 	selectBuild   = `SELECT * FROM builds WHERE id=?;`
-	insertBuild   = `INSERT INTO builds (id, output, success, created_at) VALUES (:id, :output, :success, :created_at);`
+	insertBuild   = `INSERT INTO builds (id, output, success, created_at, completed_at) VALUES (:id, :output, :success, :created_at, :completed_at);`
 	updateOutput  = `UPDATE builds SET output = CONCAT_WS(CHAR(10 using utf8), output, :line) WHERE id = :id;`
 	updateBuild   = `UPDATE builds SET output=:output, success=:success, created_at=:created_at, completed_at=:completed_at WHERE id=:id;`
 	completeBuild = `UPDATE builds SET completed_at = :completed_at WHERE id = :id;`
@@ -129,6 +129,11 @@ func (b *Build) Log(msg string) {
 func (b *Build) Save() error {
 	if db == nil {
 		return nil
+	}
+
+	if b.CompletedAt == "" {
+		b.CompletedAt = time.Unix(0, 0).UTC().Format(mySQLDateTimeFormat)
+		log.Printf("[%s]: db: new completed_at value: %s", b.Id, b.CompletedAt)
 	}
 
 	log.Printf("[%s] db: has been saved: %v", b.Id, b.saved)

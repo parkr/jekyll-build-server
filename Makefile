@@ -1,14 +1,13 @@
 all: build test
 
 build: deps
-	go build
+	go install github.com/parkr/jekyll-build-server/...
 
 test: deps
-	go test
+	go test github.com/parkr/jekyll-build-server/...
 
-deps:
-	go get github.com/zenazn/goji \
-		github.com/go-sql-driver/mysql \
-		github.com/jmoiron/sqlx \
-		github.com/google/go-github/github \
-		github.com/stretchr/testify/assert
+deps: godep
+	godep save github.com/parkr/jekyll-build-server/... github.com/stretchr/testify/assert
+
+godep:
+	go get github.com/tools/godep
