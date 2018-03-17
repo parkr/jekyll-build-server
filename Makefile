@@ -1,13 +1,22 @@
+PKG=github.com/parkr/jekyll-build-server
+RELEASE=$(shell git rev-parse HEAD)
+
 all: build test
 
 build: deps
-	go install github.com/parkr/jekyll-build-server/...
+	go install $(PKG)/...
 
 test: deps
-	go test github.com/parkr/jekyll-build-server/...
+	go test $(PKG)/...
 
 deps: godep
-	godep save github.com/parkr/jekyll-build-server/... github.com/stretchr/testify/assert
+	godep save $(PKG)/... github.com/stretchr/testify/assert
 
 godep:
 	go get github.com/tools/godep
+
+docker-build:
+	docker build -t parkr/jekyll-build-server:$(RELEASE) .
+
+docker-release: docker-build
+	docker push parkr/jekyll-build-server:$(RELEASE)
