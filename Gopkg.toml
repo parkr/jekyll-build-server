@@ -13,3 +13,7 @@
 [[constraint]]
   name = "github.com/zenazn/goji"
   branch = "master"
+
+[[constraint]]
+  name = "github.com/stretchr/testify"
+  branch = "master"

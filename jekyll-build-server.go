@@ -34,7 +34,7 @@ func buildsIndexHandler(c web.C, w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "text/html")
 	if err = templates.ExecuteTemplate(w, "index.html", builds); err != nil {
-		log.Printf("[%s] failed to render index.html: %v", err)
+		log.Printf("[%s] failed to render index.html: %v", middleware.GetReqID(c), err)
 		w.Write([]byte(`FAILED`))
 	}
 }
@@ -51,7 +51,7 @@ func buildsShowHandler(c web.C, w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
 		switch err {
 		case sql.ErrNoRows:
-			log.Printf("[%s] build with id='%s' doesn't exist", middleware.GetReqID(c), id, err)
+			log.Printf("[%s] build with id='%s' doesn't exist", middleware.GetReqID(c), id)
 			http.Error(w, fmt.Sprintf("404 build %s not found", id), 404)
 		default:
 			log.Printf("[%s] error fetching build with id='%s': %v", middleware.GetReqID(c), id, err)
@@ -61,7 +61,7 @@ func buildsShowHandler(c web.C, w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.Header().Set("Content-Type", "text/html")
 		if err = templates.ExecuteTemplate(w, "build.show.html", &build); err != nil {
-			log.Printf("[%s] failed to render build.show.html: %v", err)
+			log.Printf("[%s] failed to render build.show.html: %v", middleware.GetReqID(c), err)
 			w.Write([]byte(`FAILED`))
 		}
 	}
@@ -78,7 +78,7 @@ func shouldBuild(payload github.WebHookPayload) bool {
 }
 
 func postReceiveHook(w http.ResponseWriter, r *http.Request) {
-	log.Println("Received request %v", r)
+	log.Printf("Received request %v", r)
 
 	body, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()

@@ -9,11 +9,9 @@ build: deps
 test: deps
 	go test $(PKG)/...
 
-deps: godep
-	godep save $(PKG)/... github.com/stretchr/testify/assert
-
-godep:
-	go get github.com/tools/godep
+deps:
+	dep ensure
+	dep prune
 
 docker-build:
 	docker build -t parkr/jekyll-build-server:$(RELEASE) .
