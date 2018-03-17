@@ -1,0 +1,15 @@
+[[constraint]]
+  name = "github.com/go-sql-driver/mysql"
+  branch = "master"
+
+[[constraint]]
+  name = "github.com/google/go-github"
+  branch = "master"
+
+[[constraint]]
+  name = "github.com/jmoiron/sqlx"
+  branch = "master"
+
+[[constraint]]
+  name = "github.com/zenazn/goji"
+  branch = "master"
