@@ -3,10 +3,10 @@ RELEASE=$(shell git rev-parse HEAD)
 
 all: build test
 
-build: deps
+build:
 	go install $(PKG)/...
 
-test: deps
+test:
 	go test $(PKG)/...
 
 deps:
