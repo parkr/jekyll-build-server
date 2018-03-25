@@ -20,10 +20,15 @@ func (e *Execer) commandFromArgs(args ...string) *exec.Cmd {
 	return cmd
 }
 
+func (e *Execer) scrubLogMsg(msg, secret string) string {
+	return strings.Replace(msg, secret, "*******", -1)
+}
+
 func (e *Execer) Log(args ...interface{}) {
 	if formatStr, ok := args[0].(string); ok {
 		// Log to stdout.
 		logMsg := fmt.Sprintf("[%s] %s", e.Build.Id, fmt.Sprintf(formatStr, args[1:]...))
+		logMsg = e.scrubLogMsg(logMsg, os.Getenv("GITHUB_ACCESS_TOKEN"))
 		log.Printf(logMsg)
 
 		// Log to the database

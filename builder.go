@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 
 	"github.com/google/go-github/github"
@@ -64,7 +65,7 @@ func clone(e *Execer, payload *github.WebHookPayload) (src string, err error) {
 
 	if git, err := os.Stat(fmt.Sprintf("%s/.git", src)); (git != nil && !git.IsDir()) || err != nil {
 		e.Log("system: Cloning the repo to %s ...", src)
-		err = e.Execute("git", "clone", *payload.Repo.SSHURL, src)
+		err = e.Execute("git", "clone", cloneURL(payload.Repo), src)
 		if err != nil {
 			return src, err
 		}
@@ -106,4 +107,13 @@ func source(repo *github.Repository) string {
 
 func destination(repo *github.Repository) string {
 	return fmt.Sprintf("%s/%s", destBase, *repo.FullName)
+}
+
+func cloneURL(repo *github.Repository) string {
+	uri, err := url.Parse(*repo.CloneURL)
+	if err != nil {
+		return *repo.CloneURL
+	}
+	uri.User = url.UserPassword(os.Getenv("GITHUB_CLONE_USER"), os.Getenv("GITHUB_ACCESS_TOKEN"))
+	return uri.String()
 }
