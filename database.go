@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -41,7 +42,7 @@ func mySQLFormattedTime() string {
 }
 
 func init() {
-	flag.StringVar(&dbConnString, "db", "", "Connection string for database. Leave blank to omit db logging.")
+	flag.StringVar(&dbConnString, "db", os.Getenv("JEKYLL_BUILD_SERVER_DB_URL"), "Connection string for database. Leave blank to omit db logging. Default value is value of $JEKYLL_BUILD_SERVER_DB_URL in environment.")
 }
 
 type TableCheck struct {
