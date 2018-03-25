@@ -80,12 +80,20 @@ func shouldBuild(payload github.WebHookPayload) bool {
 func postReceiveHook(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Received request %v", r)
 
-	body, err := ioutil.ReadAll(r.Body)
+	var body []byte
+	var err error
+	if webhookSecret := os.Getenv("GITHUB_WEBHOOK_SECRET"); webhookSecret != "" {
+		body, err = github.ValidatePayload(r, []byte(webhookSecret))
+	} else {
+		body, err = ioutil.ReadAll(r.Body)
+	}
+
 	defer r.Body.Close()
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+
 	var payload github.WebHookPayload
 	err = json.Unmarshal(body, &payload)
 	if err != nil {
