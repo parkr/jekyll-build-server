@@ -88,7 +88,7 @@ func clone(e *Execer, payload *github.WebHookPayload) (src string, err error) {
 func build(e *Execer, src, dest string) (err error) {
 	e.Log("system: Building from %s to %s", src, dest)
 
-	err = e.ExecInDir(src, "script/bootstrap", "--without development test")
+	err = e.ExecInDir(src, "script/bootstrap", "--without test")
 	if err != nil {
 		return
 	}
