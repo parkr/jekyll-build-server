@@ -87,6 +87,8 @@ func (e *Execer) runCommand(cmd *exec.Cmd) error {
 		return err
 	}
 
+	e.Log("system: completed command %v", cmd)
+
 	return nil
 }
 
