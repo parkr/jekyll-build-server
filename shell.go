@@ -7,6 +7,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/kballard/go-shellquote"
 )
 
 type Execer struct {
@@ -14,10 +16,14 @@ type Execer struct {
 }
 
 func (e *Execer) commandFromArgs(args ...string) *exec.Cmd {
-	e.Log("system: running command: %s", strings.Join(args, " "))
 	cmd := exec.Command(args[0], args[1:len(args)]...)
 	cmd.Stdin = os.Stdin
+	e.Log("system: running command: %s", e.commandForLogging(cmd))
 	return cmd
+}
+
+func (e *Execer) commandForLogging(cmd *exec.Cmd) string {
+	return shellquote.Join(cmd.Args...)
 }
 
 func (e *Execer) scrubLogMsg(msg, secret string) string {
@@ -87,7 +93,7 @@ func (e *Execer) runCommand(cmd *exec.Cmd) error {
 		return err
 	}
 
-	e.Log("system: completed command %v", cmd)
+	e.Log("system: completed command: %s", e.commandForLogging(cmd))
 
 	return nil
 }
