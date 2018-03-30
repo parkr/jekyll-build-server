@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/kballard/go-shellquote"
 )
@@ -55,6 +56,8 @@ func (e *Execer) ExecInDir(dir string, args ...string) error {
 }
 
 func (e *Execer) runCommand(cmd *exec.Cmd) error {
+	startTime := time.Now()
+
 	cmdReader, err := cmd.StdoutPipe()
 	if err != nil {
 		e.Log("system: Error creating stdout pipe for command %v - %v", cmd, err)
@@ -93,7 +96,7 @@ func (e *Execer) runCommand(cmd *exec.Cmd) error {
 		return err
 	}
 
-	e.Log("system: completed command: %s", e.commandForLogging(cmd))
+	e.Log("system: completed command in %v: %s", time.Since(startTime), e.commandForLogging(cmd))
 
 	return nil
 }
