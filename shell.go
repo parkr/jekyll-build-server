@@ -94,6 +94,7 @@ func (e *Execer) runCommand(cmd *exec.Cmd) error {
 	}
 
 	err = cmd.Wait()
+	duration := time.Since(startTime)
 	if err != nil {
 		e.Log("system: error waiting for command %v - %v", cmd, err)
 		return err
@@ -101,7 +102,7 @@ func (e *Execer) runCommand(cmd *exec.Cmd) error {
 	<-done // stderr
 	<-done // stdout
 
-	e.Log("system: completed command in %v: %s", time.Since(startTime), e.commandForLogging(cmd))
+	e.Log("system: completed command in %v: %s", duration, e.commandForLogging(cmd))
 
 	return nil
 }
