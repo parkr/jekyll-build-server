@@ -71,13 +71,13 @@ func clone(e *Execer, payload *github.WebHookPayload) (src string, err error) {
 		}
 	}
 
-	err = e.ExecInDir(src, "git", "fetch", "origin")
+	err = e.ExecInDir(src, "git", "fetch", "--quiet", "origin")
 	if err != nil {
 		return
 	}
 
 	e.Log("system: Checking out revision %s ...", *payload.After)
-	err = e.ExecInDir(src, "git", "checkout", "--force", *payload.After)
+	err = e.ExecInDir(src, "git", "checkout", "--quiet", "--force", *payload.After)
 	if err != nil {
 		return
 	}
