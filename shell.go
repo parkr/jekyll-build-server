@@ -57,6 +57,7 @@ func (e *Execer) ExecInDir(dir string, args ...string) error {
 
 func (e *Execer) runCommand(cmd *exec.Cmd) error {
 	startTime := time.Now()
+	done := make(chan bool, 2)
 
 	cmdReader, err := cmd.StdoutPipe()
 	if err != nil {
@@ -69,6 +70,7 @@ func (e *Execer) runCommand(cmd *exec.Cmd) error {
 		for scanner.Scan() {
 			e.Log("stdout: %s", scanner.Text())
 		}
+		done <- true
 	}()
 
 	cmdErrReader, err := cmd.StderrPipe()
@@ -82,6 +84,7 @@ func (e *Execer) runCommand(cmd *exec.Cmd) error {
 		for scanner.Scan() {
 			e.Log("stderr: %s", scanner.Text())
 		}
+		done <- true
 	}()
 
 	err = cmd.Start()
@@ -95,6 +98,8 @@ func (e *Execer) runCommand(cmd *exec.Cmd) error {
 		e.Log("system: error waiting for command %v - %v", cmd, err)
 		return err
 	}
+	<-done // stderr
+	<-done // stdout
 
 	e.Log("system: completed command in %v: %s", time.Since(startTime), e.commandForLogging(cmd))
 
