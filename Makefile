@@ -13,6 +13,9 @@ deps:
 	dep ensure
 	dep prune
 
+dive: docker-build
+	dive parkr/jekyll-build-server:$(RELEASE)
+
 docker-build:
 	docker build -t parkr/jekyll-build-server:$(RELEASE) .
 
